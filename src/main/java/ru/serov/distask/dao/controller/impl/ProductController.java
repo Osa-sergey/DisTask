@@ -1,10 +1,7 @@
 package ru.serov.distask.dao.controller.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.dao.controller.mapper.ICProductDTOToProductMapper;
 import ru.serov.distask.dao.controller.mapper.IProductDTOToProductMapper;
@@ -32,5 +29,11 @@ public class ProductController {
         return productService
                 .createProduct(cProductMapper.cProductDTOToProduct(dto))
                 .flatMap(product -> Mono.just(productMapper.productToProductDTO(product)));
+    }
+
+    @DeleteMapping("/{id}")
+    Mono<Void> deleteProductById(@PathVariable Long id) {
+        return productService
+                .deleteProductById(id);
     }
 }
