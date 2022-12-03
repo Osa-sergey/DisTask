@@ -5,7 +5,7 @@ create table if not exists company.products
     id             bigserial primary key,
     name           varchar(200) not null unique,
     description    text         not null,
-    implement_cost money        not null
+    implement_cost numeric not null
 );
 
 create table if not exists company.articles

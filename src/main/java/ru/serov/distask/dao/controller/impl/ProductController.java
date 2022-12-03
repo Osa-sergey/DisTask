@@ -32,6 +32,5 @@ public class ProductController {
         return productService
                 .createProduct(cProductMapper.cProductDTOToProduct(dto))
                 .flatMap(product -> Mono.just(productMapper.productToProductDTO(product)));
-
     }
 }
