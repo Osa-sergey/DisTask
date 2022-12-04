@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.serov.distask.exception.impl.HasAttachedArticlesException;
 import ru.serov.distask.exception.impl.NameNotUniqueException;
+import ru.serov.distask.exception.impl.ProductsHaveAttachedArticlesException;
 
 @RestControllerAdvice
 public class RestResponseEntityExceptionHandler {
@@ -21,5 +22,11 @@ public class RestResponseEntityExceptionHandler {
     public String handelAttachedArticles(HasAttachedArticlesException ex) {
         return "The product with id `" + ex.getMessage() + "` has attached articles." +
                 " Please remove them before remove product.";
+    }
+
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ExceptionHandler(value = {ProductsHaveAttachedArticlesException.class})
+    public String handelAttachedArticles(ProductsHaveAttachedArticlesException ex) {
+        return "Products have attached articles. Please remove them before remove product.";
     }
 }

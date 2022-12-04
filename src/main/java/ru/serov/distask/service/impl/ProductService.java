@@ -7,6 +7,7 @@ import ru.serov.distask.dao.repository.IProductRepo;
 import ru.serov.distask.entity.Product;
 import ru.serov.distask.exception.impl.HasAttachedArticlesException;
 import ru.serov.distask.exception.impl.NameNotUniqueException;
+import ru.serov.distask.exception.impl.ProductsHaveAttachedArticlesException;
 import ru.serov.distask.service.IProductService;
 
 @Service
@@ -25,8 +26,13 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Mono<Void> deleteProductById(Long id) throws HasAttachedArticlesException {
+    public Mono<Void> deleteProductById(Long id) throws ProductsHaveAttachedArticlesException {
         return productRepo.deleteById(id).onErrorMap(e -> new HasAttachedArticlesException(id.toString()));
+    }
+
+    @Override
+    public Mono<Void> deleteAllProducts() throws ProductsHaveAttachedArticlesException {
+        return productRepo.deleteAll().onErrorMap(e -> new ProductsHaveAttachedArticlesException());
     }
 
 

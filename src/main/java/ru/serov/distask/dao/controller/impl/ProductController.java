@@ -36,4 +36,10 @@ public class ProductController {
         return productService
                 .deleteProductById(id);
     }
+
+    @DeleteMapping
+    Mono<Void> deleteAllProducts() {
+        return productService
+                .deleteAllProducts();
+    }
 }
