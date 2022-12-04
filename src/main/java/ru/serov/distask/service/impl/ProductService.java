@@ -47,4 +47,22 @@ public class ProductService implements IProductService {
             } else return e;
         });
     }
+
+    @Override
+    public Mono<Product> patchProduct(Product product) throws NameNotUniqueException {
+        return Mono.just(product)
+                .flatMap(n ->
+                        productRepo.findById(n.getId())
+                                .flatMap(o -> {
+                                    o.setDescription(n.getDescription() == null ? o.getDescription() : n.getDescription());
+                                    o.setImplementCost(n.getImplementCost() == null ? o.getImplementCost() : n.getImplementCost());
+                                    o.setName(n.getName() == null ? o.getName() : n.getName());
+                                    return productRepo.save(o);
+                                }).onErrorMap(e -> {
+                                    if (e instanceof DataIntegrityViolationException) {
+                                        throw new NameNotUniqueException(product.getName());
+                                    } else return e;
+                                })
+                );
+    }
 }

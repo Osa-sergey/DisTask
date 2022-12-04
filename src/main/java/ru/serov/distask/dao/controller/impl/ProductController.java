@@ -42,4 +42,11 @@ public class ProductController {
         return productService
                 .deleteAllProducts();
     }
+
+    @PatchMapping
+    Mono<ProductDTO> patchProduct(@RequestBody ProductDTO dto) {
+        return productService
+                .patchProduct(productMapper.productDTOToProduct(dto))
+                .flatMap(product -> Mono.just(productMapper.productToProductDTO(product)));
+    }
 }

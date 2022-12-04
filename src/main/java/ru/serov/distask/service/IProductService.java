@@ -11,4 +11,6 @@ public interface IProductService {
     Mono<Void> deleteProductById(Long id) throws ProductsHaveAttachedArticlesException;
 
     Mono<Void> deleteAllProducts() throws ProductsHaveAttachedArticlesException;
+
+    Mono<Product> patchProduct(Product product) throws NameNotUniqueException;
 }
