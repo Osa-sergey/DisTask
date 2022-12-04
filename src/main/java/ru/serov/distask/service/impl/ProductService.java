@@ -1,6 +1,7 @@
 package ru.serov.distask.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.dao.repository.IProductRepo;
@@ -22,18 +23,28 @@ public class ProductService implements IProductService {
 
     @Override
     public Mono<Product> createProduct(Product Product) throws NameNotUniqueException {
-        return productRepo.save(Product).onErrorMap(e -> new NameNotUniqueException(Product.getName()));
+        return productRepo.save(Product).onErrorMap(e -> {
+            if (e instanceof DataIntegrityViolationException) {
+                throw new NameNotUniqueException(Product.getName());
+            } else return e;
+        });
     }
 
     @Override
     public Mono<Void> deleteProductById(Long id) throws ProductsHaveAttachedArticlesException {
-        return productRepo.deleteById(id).onErrorMap(e -> new HasAttachedArticlesException(id.toString()));
+        return productRepo.deleteById(id).onErrorMap(e -> {
+            if (e instanceof DataIntegrityViolationException) {
+                throw new HasAttachedArticlesException(id.toString());
+            } else return e;
+        });
     }
 
     @Override
     public Mono<Void> deleteAllProducts() throws ProductsHaveAttachedArticlesException {
-        return productRepo.deleteAll().onErrorMap(e -> new ProductsHaveAttachedArticlesException());
+        return productRepo.deleteAll().onErrorMap(e -> {
+            if (e instanceof DataIntegrityViolationException) {
+                throw new ProductsHaveAttachedArticlesException();
+            } else return e;
+        });
     }
-
-
 }

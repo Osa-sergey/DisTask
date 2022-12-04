@@ -13,20 +13,26 @@ public class RestResponseEntityExceptionHandler {
 
     @ResponseStatus(value = HttpStatus.CONFLICT)
     @ExceptionHandler(value = {NameNotUniqueException.class})
-    public String handleNameConflict(NameNotUniqueException ex) {
+    public String handleException(NameNotUniqueException ex) {
         return "This name: `" + ex.getMessage() + "` already exists. ";
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT)
     @ExceptionHandler(value = {HasAttachedArticlesException.class})
-    public String handelAttachedArticles(HasAttachedArticlesException ex) {
+    public String handleException(HasAttachedArticlesException ex) {
         return "The product with id `" + ex.getMessage() + "` has attached articles." +
                 " Please remove them before remove product.";
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT)
     @ExceptionHandler(value = {ProductsHaveAttachedArticlesException.class})
-    public String handelAttachedArticles(ProductsHaveAttachedArticlesException ex) {
+    public String handleException(ProductsHaveAttachedArticlesException ex) {
         return "Products have attached articles. Please remove them before remove product.";
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    public String handleException(IllegalArgumentException ex) {
+        return "Incorrect data format";
     }
 }
