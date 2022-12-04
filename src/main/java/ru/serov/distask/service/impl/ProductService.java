@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.dao.repository.IProductRepo;
 import ru.serov.distask.entity.Product;
+import ru.serov.distask.exception.impl.EntityForPatchNotFoundException;
 import ru.serov.distask.exception.impl.HasAttachedArticlesException;
 import ru.serov.distask.exception.impl.NameNotUniqueException;
 import ru.serov.distask.exception.impl.ProductsHaveAttachedArticlesException;
@@ -53,6 +54,7 @@ public class ProductService implements IProductService {
         return Mono.just(product)
                 .flatMap(n ->
                         productRepo.findById(n.getId())
+                                .switchIfEmpty(Mono.error(new EntityForPatchNotFoundException()))
                                 .flatMap(o -> {
                                     o.setDescription(n.getDescription() == null ? o.getDescription() : n.getDescription());
                                     o.setImplementCost(n.getImplementCost() == null ? o.getImplementCost() : n.getImplementCost());
