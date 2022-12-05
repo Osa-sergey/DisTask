@@ -2,15 +2,12 @@ package ru.serov.distask.service;
 
 import reactor.core.publisher.Mono;
 import ru.serov.distask.entity.Product;
-import ru.serov.distask.exception.impl.EntityForPatchNotFoundException;
-import ru.serov.distask.exception.impl.EntityForUpdateNotFoundException;
-import ru.serov.distask.exception.impl.NameNotUniqueException;
-import ru.serov.distask.exception.impl.ProductsHaveAttachedArticlesException;
+import ru.serov.distask.exception.impl.*;
 
 public interface IProductService {
     Mono<Product> createProduct(Product product) throws NameNotUniqueException;
 
-    Mono<Void> deleteProductById(Long id) throws ProductsHaveAttachedArticlesException;
+    Mono<Void> deleteProductById(Long id) throws HasAttachedArticlesException;
 
     Mono<Void> deleteAllProducts() throws ProductsHaveAttachedArticlesException;
 

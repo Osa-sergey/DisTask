@@ -10,6 +10,8 @@ import ru.serov.distask.entity.Product;
 import ru.serov.distask.exception.impl.*;
 import ru.serov.distask.service.IProductService;
 
+import java.util.Objects;
+
 @Service
 public class ProductService implements IProductService {
 
@@ -24,13 +26,15 @@ public class ProductService implements IProductService {
     public Mono<Product> createProduct(Product product) throws NameNotUniqueException {
         return productRepo.save(product).onErrorMap(e -> {
             if (e instanceof DataIntegrityViolationException) {
-                throw new NameNotUniqueException(product.getName());
+                if (Objects.requireNonNull(e.getMessage()).contains("[23505]")) {
+                    throw new NameNotUniqueException(product.getName());
+                } else throw new IllegalArgumentException();
             } else return e;
         });
     }
 
     @Override
-    public Mono<Void> deleteProductById(Long id) throws ProductsHaveAttachedArticlesException {
+    public Mono<Void> deleteProductById(Long id) throws HasAttachedArticlesException {
         return productRepo.deleteById(id).onErrorMap(e -> {
             if (e instanceof DataIntegrityViolationException) {
                 throw new HasAttachedArticlesException(id.toString());
