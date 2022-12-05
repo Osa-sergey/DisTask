@@ -55,4 +55,11 @@ public class ArticleController {
                 .patchArticle(articleMapper.articleDTOToArticle(dto))
                 .flatMap(article -> Mono.just(articleMapper.articleToArticleDTO(article)));
     }
+
+    @PutMapping
+    Mono<ArticleDTO> updateArticle(@RequestBody ArticleDTO dto) {
+        return articleService
+                .updateArticle(articleMapper.articleDTOToArticle(dto))
+                .flatMap(article -> Mono.just(articleMapper.articleToArticleDTO(article)));
+    }
 }

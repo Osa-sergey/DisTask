@@ -82,5 +82,30 @@ public class ArticleService implements IArticleService {
                 );
     }
 
-
+    @Override
+    public Mono<Article> updateArticle(Article article) {
+        return Mono.just(article)
+                .flatMap(a -> {
+                    if (a.getId() == null ||
+                            a.getProductId() == null ||
+                            a.getName() == null ||
+                            a.getContent() == null ||
+                            a.getCreateDate() == null)
+                        return Mono.error(new IllegalArgumentException());
+                    return Mono.just(a);
+                }).flatMap(articleRepo::save)
+                .onErrorMap(e -> {
+                    if (e instanceof DataIntegrityViolationException) {
+                        if (Objects.requireNonNull(e.getMessage()).contains("[23503]")) {
+                            throw new AttachedProductNotFoundException(article.getProductId().toString());
+                        } else {
+                            throw new NameNotUniqueException(article.getName());
+                        }
+                    } else if (e instanceof TransientDataAccessResourceException) {
+                        throw new EntityForUpdateNotFoundException();
+                    } else {
+                        return e;
+                    }
+                });
+    }
 }
