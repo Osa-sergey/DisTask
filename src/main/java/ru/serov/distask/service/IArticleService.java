@@ -8,4 +8,6 @@ import ru.serov.distask.exception.impl.NameNotUniqueException;
 public interface IArticleService {
     Mono<Article> createArticle(Article article) throws NameNotUniqueException, AttachedProductNotFoundException;
 
+    Mono<Void> deleteArticleById(Long id);
+
 }
