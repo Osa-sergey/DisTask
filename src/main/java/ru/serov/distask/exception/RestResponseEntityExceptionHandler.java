@@ -4,10 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.serov.distask.exception.impl.EntityForPatchNotFoundException;
-import ru.serov.distask.exception.impl.HasAttachedArticlesException;
-import ru.serov.distask.exception.impl.NameNotUniqueException;
-import ru.serov.distask.exception.impl.ProductsHaveAttachedArticlesException;
+import ru.serov.distask.exception.impl.*;
 
 @RestControllerAdvice
 public class RestResponseEntityExceptionHandler {
@@ -41,5 +38,11 @@ public class RestResponseEntityExceptionHandler {
     @ExceptionHandler(value = {EntityForPatchNotFoundException.class})
     public String handleException(EntityForPatchNotFoundException ex) {
         return "Entity for patch not found.";
+    }
+
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ExceptionHandler(value = {EntityForUpdateNotFoundException.class})
+    public String handleException(EntityForUpdateNotFoundException ex) {
+        return "Entity for update not found.";
     }
 }

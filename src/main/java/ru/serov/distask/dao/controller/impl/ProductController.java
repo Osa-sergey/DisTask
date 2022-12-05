@@ -49,4 +49,11 @@ public class ProductController {
                 .patchProduct(productMapper.productDTOToProduct(dto))
                 .flatMap(product -> Mono.just(productMapper.productToProductDTO(product)));
     }
+
+    @PutMapping
+    Mono<ProductDTO> updateProduct(@RequestBody ProductDTO dto) {
+        return productService
+                .updateProduct(productMapper.productDTOToProduct(dto))
+                .flatMap(product -> Mono.just(productMapper.productToProductDTO(product)));
+    }
 }

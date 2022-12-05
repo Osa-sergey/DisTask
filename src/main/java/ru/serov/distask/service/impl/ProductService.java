@@ -2,14 +2,12 @@ package ru.serov.distask.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.dao.repository.IProductRepo;
 import ru.serov.distask.entity.Product;
-import ru.serov.distask.exception.impl.EntityForPatchNotFoundException;
-import ru.serov.distask.exception.impl.HasAttachedArticlesException;
-import ru.serov.distask.exception.impl.NameNotUniqueException;
-import ru.serov.distask.exception.impl.ProductsHaveAttachedArticlesException;
+import ru.serov.distask.exception.impl.*;
 import ru.serov.distask.service.IProductService;
 
 @Service
@@ -66,5 +64,27 @@ public class ProductService implements IProductService {
                                     } else return e;
                                 })
                 );
+    }
+
+    @Override
+    public Mono<Product> updateProduct(Product product) {
+        return Mono.just(product)
+                .flatMap(p -> {
+                    if (p.getId() == null ||
+                            p.getName() == null ||
+                            p.getDescription() == null ||
+                            p.getImplementCost() == null)
+                        return Mono.error(new IllegalArgumentException());
+                    return Mono.just(p);
+                }).flatMap(productRepo::save)
+                .onErrorMap(e -> {
+                    if (e instanceof DataIntegrityViolationException) {
+                        throw new NameNotUniqueException(product.getName());
+                    } else if (e instanceof TransientDataAccessResourceException) {
+                        throw new EntityForUpdateNotFoundException();
+                    } else {
+                        return e;
+                    }
+                });
     }
 }
