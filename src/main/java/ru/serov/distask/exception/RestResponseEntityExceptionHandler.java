@@ -45,4 +45,10 @@ public class RestResponseEntityExceptionHandler {
     public String handleException(EntityForUpdateNotFoundException ex) {
         return "Entity for update not found.";
     }
+
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ExceptionHandler(value = {AttachedProductNotFoundException.class})
+    public String handleException(AttachedProductNotFoundException ex) {
+        return "Attached product with id `" + ex.getMessage() + "` not found";
+    }
 }

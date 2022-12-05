@@ -1,6 +1,7 @@
 package ru.serov.distask.dao.controller.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +27,10 @@ public class ArticleController {
         this.cArticleMapper = cArticleMapper;
     }
 
+    @PostMapping
     Mono<ArticleDTO> createArticle(@RequestBody CArticleDTO dto) {
-        return null;
+        return articleService
+                .createArticle(cArticleMapper.cArticleDTOToArticle(dto))
+                .flatMap(product -> Mono.just(articleMapper.articleToArticleDTO(product)));
     }
 }
