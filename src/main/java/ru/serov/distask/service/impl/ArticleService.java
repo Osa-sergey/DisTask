@@ -49,4 +49,11 @@ public class ArticleService implements IArticleService {
     public Mono<Void> deleteAllArticles() {
         return articleRepo.deleteAll();
     }
+
+    @Override
+    public Mono<Void> deleteArticlesByProductId(Long productId) {
+        return articleRepo.deleteArticlesByProductId(productId);
+    }
+
+
 }

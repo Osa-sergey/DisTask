@@ -42,4 +42,10 @@ public class ArticleController {
         return articleService
                 .deleteAllArticles();
     }
+
+    @DeleteMapping("/product/{id}")
+    Mono<Void> deleteArticlesByProductId(@PathVariable Long id) {
+        return articleService
+                .deleteArticlesByProductId(id);
+    }
 }

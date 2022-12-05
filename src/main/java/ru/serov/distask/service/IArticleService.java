@@ -11,4 +11,6 @@ public interface IArticleService {
     Mono<Void> deleteArticleById(Long id);
 
     Mono<Void> deleteAllArticles();
+
+    Mono<Void> deleteArticlesByProductId(Long productId);
 }
