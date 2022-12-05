@@ -3,6 +3,7 @@ package ru.serov.distask.service;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.entity.Article;
 import ru.serov.distask.exception.impl.AttachedProductNotFoundException;
+import ru.serov.distask.exception.impl.EntityForPatchNotFoundException;
 import ru.serov.distask.exception.impl.NameNotUniqueException;
 
 public interface IArticleService {
@@ -13,4 +14,6 @@ public interface IArticleService {
     Mono<Void> deleteAllArticles();
 
     Mono<Void> deleteArticlesByProductId(Long productId);
+
+    Mono<Article> patchArticle(Article article) throws AttachedProductNotFoundException, EntityForPatchNotFoundException;
 }
