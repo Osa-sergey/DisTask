@@ -3,10 +3,10 @@ package ru.serov.distask.dao.controller.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-import ru.serov.distask.dao.controller.mapper.ICProductDTOToProductMapper;
-import ru.serov.distask.dao.controller.mapper.IProductDTOToProductMapper;
-import ru.serov.distask.dao.controller.model.CProductDTO;
-import ru.serov.distask.dao.controller.model.ProductDTO;
+import ru.serov.distask.dao.controller.mapper.product.ICProductDTOToProductMapper;
+import ru.serov.distask.dao.controller.mapper.product.IProductDTOToProductMapper;
+import ru.serov.distask.dao.controller.model.product.CProductDTO;
+import ru.serov.distask.dao.controller.model.product.ProductDTO;
 import ru.serov.distask.service.IProductService;
 
 @RestController
