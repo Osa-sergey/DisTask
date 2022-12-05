@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -24,5 +24,5 @@ public class Article {
     @Column(value = "content")
     private String content;
     @Column(value = "create_date")
-    private Date createDate;
+    private LocalDate createDate;
 }

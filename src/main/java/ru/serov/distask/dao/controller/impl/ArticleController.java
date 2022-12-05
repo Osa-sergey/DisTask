@@ -48,4 +48,11 @@ public class ArticleController {
         return articleService
                 .deleteArticlesByProductId(id);
     }
+
+    @PatchMapping
+    Mono<ArticleDTO> patchArticle(@RequestBody ArticleDTO dto) {
+        return articleService
+                .patchArticle(articleMapper.articleDTOToArticle(dto))
+                .flatMap(article -> Mono.just(articleMapper.articleToArticleDTO(article)));
+    }
 }

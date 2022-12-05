@@ -13,4 +13,6 @@ public interface IArticleService {
     Mono<Void> deleteAllArticles();
 
     Mono<Void> deleteArticlesByProductId(Long productId);
+
+    Mono<Article> patchArticle(Article article) throws AttachedProductNotFoundException;
 }
