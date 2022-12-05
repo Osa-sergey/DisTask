@@ -36,4 +36,10 @@ public class ArticleController {
         return articleService
                 .deleteArticleById(id);
     }
+
+    @DeleteMapping
+    Mono<Void> deleteAllArticles() {
+        return articleService
+                .deleteAllArticles();
+    }
 }
