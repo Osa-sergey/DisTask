@@ -7,9 +7,9 @@ import ru.serov.distask.entity.Product;
 
 @Mapper(componentModel = "spring")
 public interface IProductDTOToProductMapper {
-    @Mapping(target = "implementCost", source = "src.implement_cost")
+    @Mapping(target = "implementCost", source = "implement_cost")
     Product productDTOToProduct(ProductDTO src);
 
-    @Mapping(target = "implement_cost", source = "src.implementCost")
+    @Mapping(target = "implement_cost", source = "implementCost")
     ProductDTO productToProductDTO(Product src);
 }
