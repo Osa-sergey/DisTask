@@ -2,12 +2,14 @@ package ru.serov.distask.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.dao.repository.IArticleRepo;
 import ru.serov.distask.entity.Article;
 import ru.serov.distask.exception.impl.AttachedProductNotFoundException;
 import ru.serov.distask.exception.impl.EntityForPatchNotFoundException;
+import ru.serov.distask.exception.impl.EntityForUpdateNotFoundException;
 import ru.serov.distask.exception.impl.NameNotUniqueException;
 import ru.serov.distask.service.IArticleService;
 
@@ -70,7 +72,11 @@ public class ArticleService implements IArticleService {
                                     return articleRepo.save(o);
                                 }).onErrorMap(e -> {
                                     if (e instanceof DataIntegrityViolationException) {
-                                        throw new AttachedProductNotFoundException(article.getProductId().toString());
+                                        if (Objects.requireNonNull(e.getMessage()).contains("[23503]")) {
+                                            throw new AttachedProductNotFoundException(article.getProductId().toString());
+                                        } else {
+                                            throw new NameNotUniqueException(article.getName());
+                                        }
                                     } else return e;
                                 })
                 );
