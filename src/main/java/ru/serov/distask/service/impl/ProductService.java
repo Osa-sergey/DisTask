@@ -21,10 +21,10 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Mono<Product> createProduct(Product Product) throws NameNotUniqueException {
-        return productRepo.save(Product).onErrorMap(e -> {
+    public Mono<Product> createProduct(Product product) throws NameNotUniqueException {
+        return productRepo.save(product).onErrorMap(e -> {
             if (e instanceof DataIntegrityViolationException) {
-                throw new NameNotUniqueException(Product.getName());
+                throw new NameNotUniqueException(product.getName());
             } else return e;
         });
     }
