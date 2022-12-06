@@ -14,4 +14,6 @@ public interface IProductEntityService {
     Mono<ProductEntity> patchProduct(ProductEntity productEntity) throws NameNotUniqueException, EntityForPatchNotFoundException;
 
     Mono<ProductEntity> updateProduct(ProductEntity productEntity) throws NameNotUniqueException, EntityForUpdateNotFoundException;
+
+    Mono<ProductEntity> getProductById(Long id);
 }

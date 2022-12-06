@@ -91,4 +91,9 @@ public class ProductEntityService implements IProductEntityService {
                     }
                 });
     }
+
+    @Override
+    public Mono<ProductEntity> getProductById(Long id) {
+        return productRepo.findById(id);
+    }
 }

@@ -21,4 +21,6 @@ public interface IArticleEntityService {
 
     Mono<ArticleEntity> updateArticle(ArticleEntity articleEntity) throws AttachedProductNotFoundException,
             EntityForUpdateNotFoundException, NameNotUniqueException;
+
+    Mono<ArticleEntity> getArticleById(Long id);
 }

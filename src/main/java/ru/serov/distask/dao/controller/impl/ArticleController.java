@@ -3,27 +3,36 @@ package ru.serov.distask.dao.controller.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import ru.serov.distask.dao.controller.mapper.article.IArticleDTOArticleMapper;
 import ru.serov.distask.dao.controller.mapper.articleentity.IArticleEntityDTOArticleEntityMapper;
 import ru.serov.distask.dao.controller.mapper.articleentity.ICArticleEntityDTOArticleEntityMapper;
+import ru.serov.distask.dao.controller.model.article.ArticleDTO;
 import ru.serov.distask.dao.controller.model.articleentity.ArticleEntityDTO;
 import ru.serov.distask.dao.controller.model.articleentity.CArticleEntityDTO;
 import ru.serov.distask.service.IArticleEntityService;
+import ru.serov.distask.service.IArticleService;
 
 @RestController
 @RequestMapping("/api/v1/article")
 public class ArticleController {
 
     private final IArticleEntityService articleEntityService;
+    private final IArticleService articleService;
     private final IArticleEntityDTOArticleEntityMapper articleEntityMapper;
     private final ICArticleEntityDTOArticleEntityMapper cArticleEntityMapper;
+    private final IArticleDTOArticleMapper articleMapper;
 
     @Autowired
     public ArticleController(IArticleEntityService articleEntityService,
+                             IArticleService articleService,
                              IArticleEntityDTOArticleEntityMapper articleEntityMapper,
-                             ICArticleEntityDTOArticleEntityMapper cArticleEntityMapper) {
+                             ICArticleEntityDTOArticleEntityMapper cArticleEntityMapper,
+                             IArticleDTOArticleMapper articleMapper) {
         this.articleEntityService = articleEntityService;
+        this.articleService = articleService;
         this.articleEntityMapper = articleEntityMapper;
         this.cArticleEntityMapper = cArticleEntityMapper;
+        this.articleMapper = articleMapper;
     }
 
     @PostMapping
@@ -63,5 +72,12 @@ public class ArticleController {
         return articleEntityService
                 .updateArticle(articleEntityMapper.dtoToEntity(dto))
                 .flatMap(article -> Mono.just(articleEntityMapper.entityToDTO(article)));
+    }
+
+    @GetMapping("/{id}")
+    Mono<ArticleDTO> getArticleById(@PathVariable Long id) {
+        return articleService
+                .getArticleById(id)
+                .flatMap(article -> Mono.just(articleMapper.entityToDTO(article)));
     }
 }

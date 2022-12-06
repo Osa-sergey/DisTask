@@ -108,4 +108,9 @@ public class ArticleEntityService implements IArticleEntityService {
                     }
                 });
     }
+
+    @Override
+    public Mono<ArticleEntity> getArticleById(Long id) {
+        return articleRepo.findById(id);
+    }
 }
