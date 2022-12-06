@@ -3,27 +3,36 @@ package ru.serov.distask.dao.controller.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import ru.serov.distask.dao.controller.mapper.product.IProductDTOProductMapper;
 import ru.serov.distask.dao.controller.mapper.productentity.ICProductEntityDTOProductEntityMapper;
 import ru.serov.distask.dao.controller.mapper.productentity.IProductEntityDTOProductEntityMapper;
+import ru.serov.distask.dao.controller.model.product.ProductDTO;
 import ru.serov.distask.dao.controller.model.productentity.CProductEntityDTO;
 import ru.serov.distask.dao.controller.model.productentity.ProductEntityDTO;
 import ru.serov.distask.service.IProductEntityService;
+import ru.serov.distask.service.IProductService;
 
 @RestController
 @RequestMapping("/api/v1/product")
 public class ProductController {
 
     private final IProductEntityService productEntityService;
+    private final IProductService productService;
     private final ICProductEntityDTOProductEntityMapper cProductEntityMapper;
     private final IProductEntityDTOProductEntityMapper productEntityMapper;
+    private final IProductDTOProductMapper mapper;
 
     @Autowired
     public ProductController(IProductEntityService productEntityService,
+                             IProductService productService,
                              ICProductEntityDTOProductEntityMapper cProductEntityMapper,
-                             IProductEntityDTOProductEntityMapper productEntityMapper) {
+                             IProductEntityDTOProductEntityMapper productEntityMapper,
+                             IProductDTOProductMapper mapper) {
         this.productEntityService = productEntityService;
+        this.productService = productService;
         this.cProductEntityMapper = cProductEntityMapper;
         this.productEntityMapper = productEntityMapper;
+        this.mapper = mapper;
     }
 
     @PostMapping
@@ -57,5 +66,12 @@ public class ProductController {
         return productEntityService
                 .updateProduct(productEntityMapper.dotToEntity(dto))
                 .flatMap(product -> Mono.just(productEntityMapper.entityToDTO(product)));
+    }
+
+    @GetMapping("/{id}")
+    Mono<ProductDTO> getProductById(@PathVariable Long id) {
+        return productService
+                .getProductById(id)
+                .flatMap(product -> Mono.just(mapper.entityToDTO(product)));
     }
 }

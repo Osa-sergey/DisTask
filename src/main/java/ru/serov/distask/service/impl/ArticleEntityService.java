@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.dao.repository.IArticleEntityRepo;
 import ru.serov.distask.dao.repository.enity.ArticleEntity;
@@ -112,5 +113,10 @@ public class ArticleEntityService implements IArticleEntityService {
     @Override
     public Mono<ArticleEntity> getArticleById(Long id) {
         return articleRepo.findById(id);
+    }
+
+    @Override
+    public Flux<ArticleEntity> getArticlesByProductId(Long productId) {
+        return articleRepo.findAllByProductId(productId);
     }
 }
