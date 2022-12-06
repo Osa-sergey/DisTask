@@ -1,4 +1,4 @@
-package ru.serov.distask.entity;
+package ru.serov.distask.dao.repository.enity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @Table(name = "articles", schema = "company")
-public class Article {
+public class ArticleEntity {
     @Id
     @Column(value = "id")
     private Long id;

@@ -1,4 +1,4 @@
-package ru.serov.distask.entity;
+package ru.serov.distask.dao.repository.enity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Setter
 @NoArgsConstructor
 @Table(name = "products", schema = "company")
-public class Product {
+public class ProductEntity {
     @Id
     @Column(value = "id")
     private Long id;

@@ -5,39 +5,39 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import ru.serov.distask.dao.repository.IArticleRepo;
-import ru.serov.distask.entity.Article;
+import ru.serov.distask.dao.repository.IArticleEntityRepo;
+import ru.serov.distask.dao.repository.enity.ArticleEntity;
 import ru.serov.distask.exception.impl.AttachedProductNotFoundException;
 import ru.serov.distask.exception.impl.EntityForPatchNotFoundException;
 import ru.serov.distask.exception.impl.EntityForUpdateNotFoundException;
 import ru.serov.distask.exception.impl.NameNotUniqueException;
-import ru.serov.distask.service.IArticleService;
+import ru.serov.distask.service.IArticleEntityService;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Service
-public class ArticleService implements IArticleService {
+public class ArticleEntityService implements IArticleEntityService {
 
-    private final IArticleRepo articleRepo;
+    private final IArticleEntityRepo articleRepo;
 
     @Autowired
-    public ArticleService(IArticleRepo articleRepo) {
+    public ArticleEntityService(IArticleEntityRepo articleRepo) {
         this.articleRepo = articleRepo;
     }
 
 
     @Override
-    public Mono<Article> createArticle(Article article) {
-        return Mono.just(article).flatMap(p -> {
+    public Mono<ArticleEntity> createArticle(ArticleEntity articleEntity) {
+        return Mono.just(articleEntity).flatMap(p -> {
             p.setCreateDate(LocalDate.now());
-            return articleRepo.save(article);
+            return articleRepo.save(articleEntity);
         }).onErrorMap(e -> {
             if (e instanceof DataIntegrityViolationException) {
                 if (Objects.requireNonNull(e.getMessage()).contains("[23505]")) {
-                    throw new NameNotUniqueException(article.getName());
+                    throw new NameNotUniqueException(articleEntity.getName());
                 } else if (Objects.requireNonNull(e.getMessage()).contains("[23503]")) {
-                    throw new AttachedProductNotFoundException(article.getProductId().toString());
+                    throw new AttachedProductNotFoundException(articleEntity.getProductId().toString());
                 } else throw new IllegalArgumentException();
             } else return e;
         });
@@ -59,8 +59,8 @@ public class ArticleService implements IArticleService {
     }
 
     @Override
-    public Mono<Article> patchArticle(Article article) {
-        return Mono.just(article)
+    public Mono<ArticleEntity> patchArticle(ArticleEntity articleEntity) {
+        return Mono.just(articleEntity)
                 .flatMap(n ->
                         articleRepo.findById(n.getId())
                                 .switchIfEmpty(Mono.error(new EntityForPatchNotFoundException()))
@@ -73,9 +73,9 @@ public class ArticleService implements IArticleService {
                                 }).onErrorMap(e -> {
                                     if (e instanceof DataIntegrityViolationException) {
                                         if (Objects.requireNonNull(e.getMessage()).contains("[23503]")) {
-                                            throw new AttachedProductNotFoundException(article.getProductId().toString());
+                                            throw new AttachedProductNotFoundException(articleEntity.getProductId().toString());
                                         } else {
-                                            throw new NameNotUniqueException(article.getName());
+                                            throw new NameNotUniqueException(articleEntity.getName());
                                         }
                                     } else return e;
                                 })
@@ -83,8 +83,8 @@ public class ArticleService implements IArticleService {
     }
 
     @Override
-    public Mono<Article> updateArticle(Article article) {
-        return Mono.just(article)
+    public Mono<ArticleEntity> updateArticle(ArticleEntity articleEntity) {
+        return Mono.just(articleEntity)
                 .flatMap(a -> {
                     if (a.getId() == null ||
                             a.getProductId() == null ||
@@ -97,9 +97,9 @@ public class ArticleService implements IArticleService {
                 .onErrorMap(e -> {
                     if (e instanceof DataIntegrityViolationException) {
                         if (Objects.requireNonNull(e.getMessage()).contains("[23503]")) {
-                            throw new AttachedProductNotFoundException(article.getProductId().toString());
+                            throw new AttachedProductNotFoundException(articleEntity.getProductId().toString());
                         } else {
-                            throw new NameNotUniqueException(article.getName());
+                            throw new NameNotUniqueException(articleEntity.getName());
                         }
                     } else if (e instanceof TransientDataAccessResourceException) {
                         throw new EntityForUpdateNotFoundException();

@@ -3,57 +3,59 @@ package ru.serov.distask.dao.controller.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-import ru.serov.distask.dao.controller.mapper.product.ICProductDTOToProductMapper;
-import ru.serov.distask.dao.controller.mapper.product.IProductDTOToProductMapper;
-import ru.serov.distask.dao.controller.model.product.CProductDTO;
-import ru.serov.distask.dao.controller.model.product.ProductDTO;
-import ru.serov.distask.service.IProductService;
+import ru.serov.distask.dao.controller.mapper.productentity.ICProductEntityDTOProductEntityMapper;
+import ru.serov.distask.dao.controller.mapper.productentity.IProductEntityDTOProductEntityMapper;
+import ru.serov.distask.dao.controller.model.productentity.CProductEntityDTO;
+import ru.serov.distask.dao.controller.model.productentity.ProductEntityDTO;
+import ru.serov.distask.service.IProductEntityService;
 
 @RestController
 @RequestMapping("/api/v1/product")
 public class ProductController {
 
-    private final IProductService productService;
-    private final ICProductDTOToProductMapper cProductMapper;
-    private final IProductDTOToProductMapper productMapper;
+    private final IProductEntityService productEntityService;
+    private final ICProductEntityDTOProductEntityMapper cProductEntityMapper;
+    private final IProductEntityDTOProductEntityMapper productEntityMapper;
 
     @Autowired
-    public ProductController(IProductService productService, ICProductDTOToProductMapper cProductMapper, IProductDTOToProductMapper productMapper) {
-        this.productService = productService;
-        this.cProductMapper = cProductMapper;
-        this.productMapper = productMapper;
+    public ProductController(IProductEntityService productEntityService,
+                             ICProductEntityDTOProductEntityMapper cProductEntityMapper,
+                             IProductEntityDTOProductEntityMapper productEntityMapper) {
+        this.productEntityService = productEntityService;
+        this.cProductEntityMapper = cProductEntityMapper;
+        this.productEntityMapper = productEntityMapper;
     }
 
     @PostMapping
-    Mono<ProductDTO> createProduct(@RequestBody CProductDTO dto) {
-        return productService
-                .createProduct(cProductMapper.cProductDTOToProduct(dto))
-                .flatMap(product -> Mono.just(productMapper.productToProductDTO(product)));
+    Mono<ProductEntityDTO> createProduct(@RequestBody CProductEntityDTO dto) {
+        return productEntityService
+                .createProduct(cProductEntityMapper.dtoToEntity(dto))
+                .flatMap(product -> Mono.just(productEntityMapper.entityToDTO(product)));
     }
 
     @DeleteMapping("/{id}")
     Mono<Void> deleteProductById(@PathVariable Long id) {
-        return productService
+        return productEntityService
                 .deleteProductById(id);
     }
 
     @DeleteMapping
     Mono<Void> deleteAllProducts() {
-        return productService
+        return productEntityService
                 .deleteAllProducts();
     }
 
     @PatchMapping
-    Mono<ProductDTO> patchProduct(@RequestBody ProductDTO dto) {
-        return productService
-                .patchProduct(productMapper.productDTOToProduct(dto))
-                .flatMap(product -> Mono.just(productMapper.productToProductDTO(product)));
+    Mono<ProductEntityDTO> patchProduct(@RequestBody ProductEntityDTO dto) {
+        return productEntityService
+                .patchProduct(productEntityMapper.dotToEntity(dto))
+                .flatMap(product -> Mono.just(productEntityMapper.entityToDTO(product)));
     }
 
     @PutMapping
-    Mono<ProductDTO> updateProduct(@RequestBody ProductDTO dto) {
-        return productService
-                .updateProduct(productMapper.productDTOToProduct(dto))
-                .flatMap(product -> Mono.just(productMapper.productToProductDTO(product)));
+    Mono<ProductEntityDTO> updateProduct(@RequestBody ProductEntityDTO dto) {
+        return productEntityService
+                .updateProduct(productEntityMapper.dotToEntity(dto))
+                .flatMap(product -> Mono.just(productEntityMapper.entityToDTO(product)));
     }
 }

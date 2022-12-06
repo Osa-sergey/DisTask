@@ -1,11 +1,11 @@
-package ru.serov.distask.dao.controller.model.article;
+package ru.serov.distask.dao.controller.model.articleentity;
 
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class ArticleDTO {
+public class ArticleEntityDTO {
     private Long id;
     private Long product_id;
     private String name;

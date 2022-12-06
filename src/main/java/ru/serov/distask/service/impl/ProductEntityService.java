@@ -5,29 +5,29 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import ru.serov.distask.dao.repository.IProductRepo;
-import ru.serov.distask.entity.Product;
+import ru.serov.distask.dao.repository.IProductEntityRepo;
+import ru.serov.distask.dao.repository.enity.ProductEntity;
 import ru.serov.distask.exception.impl.*;
-import ru.serov.distask.service.IProductService;
+import ru.serov.distask.service.IProductEntityService;
 
 import java.util.Objects;
 
 @Service
-public class ProductService implements IProductService {
+public class ProductEntityService implements IProductEntityService {
 
-    private final IProductRepo productRepo;
+    private final IProductEntityRepo productRepo;
 
     @Autowired
-    public ProductService(IProductRepo productRepo) {
+    public ProductEntityService(IProductEntityRepo productRepo) {
         this.productRepo = productRepo;
     }
 
     @Override
-    public Mono<Product> createProduct(Product product) throws NameNotUniqueException {
-        return productRepo.save(product).onErrorMap(e -> {
+    public Mono<ProductEntity> createProduct(ProductEntity productEntity) throws NameNotUniqueException {
+        return productRepo.save(productEntity).onErrorMap(e -> {
             if (e instanceof DataIntegrityViolationException) {
                 if (Objects.requireNonNull(e.getMessage()).contains("[23505]")) {
-                    throw new NameNotUniqueException(product.getName());
+                    throw new NameNotUniqueException(productEntity.getName());
                 } else throw new IllegalArgumentException();
             } else return e;
         });
@@ -52,8 +52,8 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Mono<Product> patchProduct(Product product) throws NameNotUniqueException {
-        return Mono.just(product)
+    public Mono<ProductEntity> patchProduct(ProductEntity productEntity) throws NameNotUniqueException {
+        return Mono.just(productEntity)
                 .flatMap(n ->
                         productRepo.findById(n.getId())
                                 .switchIfEmpty(Mono.error(new EntityForPatchNotFoundException()))
@@ -64,15 +64,15 @@ public class ProductService implements IProductService {
                                     return productRepo.save(o);
                                 }).onErrorMap(e -> {
                                     if (e instanceof DataIntegrityViolationException) {
-                                        throw new NameNotUniqueException(product.getName());
+                                        throw new NameNotUniqueException(productEntity.getName());
                                     } else return e;
                                 })
                 );
     }
 
     @Override
-    public Mono<Product> updateProduct(Product product) {
-        return Mono.just(product)
+    public Mono<ProductEntity> updateProduct(ProductEntity productEntity) {
+        return Mono.just(productEntity)
                 .flatMap(p -> {
                     if (p.getId() == null ||
                             p.getName() == null ||
@@ -83,7 +83,7 @@ public class ProductService implements IProductService {
                 }).flatMap(productRepo::save)
                 .onErrorMap(e -> {
                     if (e instanceof DataIntegrityViolationException) {
-                        throw new NameNotUniqueException(product.getName());
+                        throw new NameNotUniqueException(productEntity.getName());
                     } else if (e instanceof TransientDataAccessResourceException) {
                         throw new EntityForUpdateNotFoundException();
                     } else {
