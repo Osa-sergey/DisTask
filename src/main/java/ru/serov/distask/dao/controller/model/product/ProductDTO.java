@@ -10,5 +10,5 @@ public class ProductDTO {
     private String name;
     private String description;
     private Float implement_cost;
-    private List<Long> article_ids;
+    private List<ArticleListItemDTO> articles;
 }
