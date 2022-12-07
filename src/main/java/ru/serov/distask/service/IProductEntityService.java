@@ -1,5 +1,6 @@
 package ru.serov.distask.service;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.dao.repository.enity.ProductEntity;
 import ru.serov.distask.exception.impl.*;
@@ -16,4 +17,6 @@ public interface IProductEntityService {
     Mono<ProductEntity> updateProduct(ProductEntity productEntity) throws NameNotUniqueException, EntityForUpdateNotFoundException;
 
     Mono<ProductEntity> getProductById(Long id);
+
+    Flux<ProductEntity> getAllProducts();
 }
