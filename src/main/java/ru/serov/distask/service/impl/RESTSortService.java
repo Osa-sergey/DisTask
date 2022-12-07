@@ -25,7 +25,50 @@ public class RESTSortService implements IRESTSortService {
         List<String> allowedNames = Arrays.asList("id", "product_id", "article_name", "article_content", "create_date",
                 "product_name", "product_description", "product_implement_cost");
         List<SortParam> params = getSortParams(sortedBy, allowedNames);
-
+        for (SortParam param : params) {
+            switch (param.getName()) {
+                case "id":
+                    comparator = (param.getOrder() == Ordering.DESC) ?
+                            comparator.thenComparing(ArticleDTO::getId, Comparator.reverseOrder())
+                            : comparator.thenComparing(ArticleDTO::getId);
+                    break;
+                case "product_id":
+                    comparator = (param.getOrder() == Ordering.DESC) ?
+                            comparator.thenComparing(ArticleDTO::getProduct_id, Comparator.reverseOrder())
+                            : comparator.thenComparing(ArticleDTO::getProduct_id);
+                    break;
+                case "article_name":
+                    comparator = (param.getOrder() == Ordering.DESC) ?
+                            comparator.thenComparing(ArticleDTO::getArticle_name, Comparator.reverseOrder())
+                            : comparator.thenComparing(ArticleDTO::getArticle_name);
+                    break;
+                case "article_content":
+                    comparator = (param.getOrder() == Ordering.DESC) ?
+                            comparator.thenComparing(ArticleDTO::getArticle_content, Comparator.reverseOrder())
+                            : comparator.thenComparing(ArticleDTO::getArticle_content);
+                    break;
+                case "create_date":
+                    comparator = (param.getOrder() == Ordering.DESC) ?
+                            comparator.thenComparing(ArticleDTO::getCreate_date, Comparator.reverseOrder())
+                            : comparator.thenComparing(ArticleDTO::getCreate_date);
+                    break;
+                case "product_name":
+                    comparator = (param.getOrder() == Ordering.DESC) ?
+                            comparator.thenComparing(ArticleDTO::getProduct_name, Comparator.reverseOrder())
+                            : comparator.thenComparing(ArticleDTO::getProduct_name);
+                    break;
+                case "product_description":
+                    comparator = (param.getOrder() == Ordering.DESC) ?
+                            comparator.thenComparing(ArticleDTO::getProduct_description, Comparator.reverseOrder())
+                            : comparator.thenComparing(ArticleDTO::getProduct_description);
+                    break;
+                case "product_implement_cost":
+                    comparator = (param.getOrder() == Ordering.DESC) ?
+                            comparator.thenComparing(ArticleDTO::getProduct_implement_cost, Comparator.reverseOrder())
+                            : comparator.thenComparing(ArticleDTO::getProduct_implement_cost);
+                    break;
+            }
+        }
         return comparator;
     }
 
