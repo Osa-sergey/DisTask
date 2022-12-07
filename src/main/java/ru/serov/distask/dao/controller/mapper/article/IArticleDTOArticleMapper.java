@@ -5,8 +5,13 @@ import org.mapstruct.Mapping;
 import ru.serov.distask.dao.controller.model.article.ArticleDTO;
 import ru.serov.distask.model.Article;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface IArticleDTOArticleMapper {
+
+    List<ArticleDTO> entityToDTO(List<Article> src);
+
     @Mapping(target = "product_id", source = "productId")
     @Mapping(target = "article_name", source = "articleName")
     @Mapping(target = "article_content", source = "articleContent")

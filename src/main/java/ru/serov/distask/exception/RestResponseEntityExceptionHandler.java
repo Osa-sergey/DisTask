@@ -51,4 +51,23 @@ public class RestResponseEntityExceptionHandler {
     public String handleException(AttachedProductNotFoundException ex) {
         return "Attached product with id `" + ex.getMessage() + "` not found";
     }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {UnrecognizedSortParamException.class})
+    public String handleException(UnrecognizedSortParamException ex) {
+        return "The notation for the sorting type is not recognized. Allowed (desc, asc) Provided `" + ex.getMessage()
+                + "`.";
+    }
+
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ExceptionHandler(value = {UnavailableSortFieldName.class})
+    public String handleException(UnavailableSortFieldName ex) {
+        return "Name `" + ex.getMessage() + "` unavailable for sort parameter in this entity.";
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {IncorrectSortParamsFormat.class})
+    public String handleException(IncorrectSortParamsFormat ex) {
+        return "Sorting parameters do not match the format: asc/desc(name1),asc/desc(name2),...";
+    }
 }
