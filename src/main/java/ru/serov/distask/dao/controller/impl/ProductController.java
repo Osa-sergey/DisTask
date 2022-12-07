@@ -2,7 +2,6 @@ package ru.serov.distask.dao.controller.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.dao.controller.mapper.product.IProductDTOProductMapper;
 import ru.serov.distask.dao.controller.mapper.productentity.ICProductEntityDTOProductEntityMapper;
@@ -10,8 +9,14 @@ import ru.serov.distask.dao.controller.mapper.productentity.IProductEntityDTOPro
 import ru.serov.distask.dao.controller.model.product.ProductDTO;
 import ru.serov.distask.dao.controller.model.productentity.CProductEntityDTO;
 import ru.serov.distask.dao.controller.model.productentity.ProductEntityDTO;
+import ru.serov.distask.dao.controller.sort.ISortComparator;
 import ru.serov.distask.service.IProductEntityService;
 import ru.serov.distask.service.IProductService;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/product")
@@ -19,21 +24,25 @@ public class ProductController {
 
     private final IProductEntityService productEntityService;
     private final IProductService productService;
+    private final ISortComparator<ProductDTO> productSortComparator;
     private final ICProductEntityDTOProductEntityMapper cProductEntityMapper;
     private final IProductEntityDTOProductEntityMapper productEntityMapper;
-    private final IProductDTOProductMapper mapper;
+    private final IProductDTOProductMapper productMapper;
+    private final List<String> allowedNamesForSort = Arrays.asList("id", "name", "description", "implement_cost");
 
     @Autowired
     public ProductController(IProductEntityService productEntityService,
                              IProductService productService,
+                             ISortComparator<ProductDTO> productSortComparator,
                              ICProductEntityDTOProductEntityMapper cProductEntityMapper,
                              IProductEntityDTOProductEntityMapper productEntityMapper,
                              IProductDTOProductMapper mapper) {
         this.productEntityService = productEntityService;
         this.productService = productService;
+        this.productSortComparator = productSortComparator;
         this.cProductEntityMapper = cProductEntityMapper;
         this.productEntityMapper = productEntityMapper;
-        this.mapper = mapper;
+        this.productMapper = mapper;
     }
 
     @PostMapping
@@ -73,13 +82,21 @@ public class ProductController {
     Mono<ProductDTO> getProductById(@PathVariable Long id) {
         return productService
                 .getProductById(id)
-                .flatMap(product -> Mono.just(mapper.entityToDTO(product)));
+                .flatMap(product -> Mono.just(productMapper.entityToDTO(product)));
     }
 
     @GetMapping
-    Flux<ProductDTO> getProducts() {
+    Mono<List<ProductDTO>> getProducts(@RequestParam(value = "filter_by", required = false) String filterBy,
+                                       @RequestParam(value = "sorted_by", required = false) String sortedBy) {
+        Comparator<ProductDTO> comparator = productSortComparator.getComparator(sortedBy, allowedNamesForSort);
         return productService
                 .getAllProducts()
-                .flatMap(product -> Mono.just(mapper.entityToDTO(product)));
+                .flatMap(product -> {
+                    List<ProductDTO> dtos = productMapper.entityToDTO(product);
+                    dtos = dtos.stream()
+                            .sorted(comparator)
+                            .collect(Collectors.toList());
+                    return Mono.just(dtos);
+                });
     }
 }

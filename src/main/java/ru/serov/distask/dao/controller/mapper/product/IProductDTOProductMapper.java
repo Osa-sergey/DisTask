@@ -18,4 +18,6 @@ public interface IProductDTOProductMapper {
 
     @Mapping(target = "implement_cost", source = "implementCost")
     ProductDTO entityToDTO(Product src);
+
+    List<ProductDTO> entityToDTO(List<Product> src);
 }

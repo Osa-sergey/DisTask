@@ -2,13 +2,14 @@ package ru.serov.distask.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.dao.controller.mapper.productentity.IProductAndArticleEntityToProductMapper;
 import ru.serov.distask.model.Product;
 import ru.serov.distask.service.IArticleEntityService;
 import ru.serov.distask.service.IProductEntityService;
 import ru.serov.distask.service.IProductService;
+
+import java.util.List;
 
 @Service
 public class ProductService implements IProductService {
@@ -38,12 +39,13 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Flux<Product> getAllProducts() {
+    public Mono<List<Product>> getAllProducts() {
         return productEntityService
                 .getAllProducts()
                 .flatMap(product -> articleEntityService
                         .getArticlesByProductId(product.getId())
                         .collectList()
-                        .map(articles -> mapper.entityToProduct(product, articles)));
+                        .map(articles -> mapper.entityToProduct(product, articles)))
+                .collectList();
     }
 }
