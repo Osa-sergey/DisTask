@@ -2,6 +2,7 @@ package ru.serov.distask.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.dao.controller.mapper.articleentity.IArticleAndProductEntityToArticleMapper;
 import ru.serov.distask.model.Article;
@@ -29,6 +30,14 @@ public class ArticleService implements IArticleService {
     public Mono<Article> getArticleById(Long id) {
         return articleEntityService
                 .getArticleById(id)
+                .flatMap(article -> productEntityService.getProductById(article.getProductId())
+                        .map(product -> mapper.entityToArticle(article, product)));
+    }
+
+    @Override
+    public Flux<Article> getAllArticles() {
+        return articleEntityService
+                .getAllArticles()
                 .flatMap(article -> productEntityService.getProductById(article.getProductId())
                         .map(product -> mapper.entityToArticle(article, product)));
     }

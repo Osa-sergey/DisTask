@@ -26,4 +26,6 @@ public interface IArticleEntityService {
     Mono<ArticleEntity> getArticleById(Long id);
 
     Flux<ArticleEntity> getArticlesByProductId(Long productId);
+
+    Flux<ArticleEntity> getAllArticles();
 }

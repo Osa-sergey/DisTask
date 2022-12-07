@@ -2,6 +2,7 @@ package ru.serov.distask.dao.controller.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.serov.distask.dao.controller.mapper.article.IArticleDTOArticleMapper;
 import ru.serov.distask.dao.controller.mapper.articleentity.IArticleEntityDTOArticleEntityMapper;
@@ -78,6 +79,13 @@ public class ArticleController {
     Mono<ArticleDTO> getArticleById(@PathVariable Long id) {
         return articleService
                 .getArticleById(id)
+                .flatMap(article -> Mono.just(articleMapper.entityToDTO(article)));
+    }
+
+    @GetMapping
+    Flux<ArticleDTO> getArticles() {
+        return articleService
+                .getAllArticles()
                 .flatMap(article -> Mono.just(articleMapper.entityToDTO(article)));
     }
 }

@@ -119,4 +119,9 @@ public class ArticleEntityService implements IArticleEntityService {
     public Flux<ArticleEntity> getArticlesByProductId(Long productId) {
         return articleRepo.findAllByProductId(productId);
     }
+
+    @Override
+    public Flux<ArticleEntity> getAllArticles() {
+        return articleRepo.findAll();
+    }
 }
