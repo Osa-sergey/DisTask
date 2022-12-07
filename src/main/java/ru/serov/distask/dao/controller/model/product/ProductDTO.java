@@ -1,7 +1,8 @@
 package ru.serov.distask.dao.controller.model.product;
 
 import lombok.Data;
-import reactor.core.publisher.Flux;
+
+import java.util.List;
 
 @Data
 public class ProductDTO {
@@ -9,5 +10,5 @@ public class ProductDTO {
     private String name;
     private String description;
     private Float implement_cost;
-    private Flux<Long> article_ids;
+    private List<Long> article_ids;
 }

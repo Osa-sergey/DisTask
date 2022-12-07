@@ -1,8 +1,9 @@
 package ru.serov.distask.model;
 
 import lombok.Data;
-import reactor.core.publisher.Flux;
 import ru.serov.distask.dao.repository.enity.ArticleEntity;
+
+import java.util.List;
 
 @Data
 public class Product {
@@ -10,5 +11,5 @@ public class Product {
     private String name;
     private String description;
     private Float implementCost;
-    private Flux<ArticleEntity> articles;
+    private List<ArticleEntity> articles;
 }
