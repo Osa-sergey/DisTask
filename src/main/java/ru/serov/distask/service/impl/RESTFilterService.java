@@ -9,6 +9,7 @@ import ru.serov.distask.service.model.FilterParam;
 import ru.serov.distask.service.model.Operation;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 public class RESTFilterService implements IRESTFilterService {
     @Override
     public List<FilterParam> getFilterParams(String filteredBy, List<String> allowedNames) {
+        if (filteredBy == null || filteredBy.isEmpty()) return Collections.emptyList();
         return Arrays.stream(filteredBy.split(","))
                 .map(param -> {
                     String[] condValue = param.split("=", 2);
@@ -48,6 +50,9 @@ public class RESTFilterService implements IRESTFilterService {
                             break;
                         case "ele":
                             res = new FilterParam(field, Operation.ELE, value);
+                            break;
+                        case "cont":
+                            res = new FilterParam(field, Operation.CONT, value);
                             break;
                         default:
                             throw new UnrecognizedFilterParamException(cond);
