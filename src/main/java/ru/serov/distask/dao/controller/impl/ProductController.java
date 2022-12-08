@@ -3,6 +3,7 @@ package ru.serov.distask.dao.controller.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import ru.serov.distask.dao.controller.filter.IDTOFilter;
 import ru.serov.distask.dao.controller.mapper.product.IProductDTOProductMapper;
 import ru.serov.distask.dao.controller.mapper.productentity.ICProductEntityDTOProductEntityMapper;
 import ru.serov.distask.dao.controller.mapper.productentity.IProductEntityDTOProductEntityMapper;
@@ -12,6 +13,8 @@ import ru.serov.distask.dao.controller.model.productentity.ProductEntityDTO;
 import ru.serov.distask.dao.controller.sort.ISortComparator;
 import ru.serov.distask.service.IProductEntityService;
 import ru.serov.distask.service.IProductService;
+import ru.serov.distask.service.IRESTFilterService;
+import ru.serov.distask.service.model.FilterParam;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -24,25 +27,32 @@ public class ProductController {
 
     private final IProductEntityService productEntityService;
     private final IProductService productService;
+    private final IRESTFilterService filterService;
     private final ISortComparator<ProductDTO> productSortComparator;
     private final ICProductEntityDTOProductEntityMapper cProductEntityMapper;
     private final IProductEntityDTOProductEntityMapper productEntityMapper;
     private final IProductDTOProductMapper productMapper;
+    private final IDTOFilter<ProductDTO> filter;
     private final List<String> allowedNamesForSort = Arrays.asList("id", "name", "description", "implement_cost");
+    private final List<String> allowedNamesForFilter = Arrays.asList("id", "name", "description", "implement_cost");
 
     @Autowired
     public ProductController(IProductEntityService productEntityService,
                              IProductService productService,
+                             IRESTFilterService filterService,
                              ISortComparator<ProductDTO> productSortComparator,
                              ICProductEntityDTOProductEntityMapper cProductEntityMapper,
                              IProductEntityDTOProductEntityMapper productEntityMapper,
-                             IProductDTOProductMapper mapper) {
+                             IProductDTOProductMapper mapper,
+                             IDTOFilter<ProductDTO> filter) {
         this.productEntityService = productEntityService;
         this.productService = productService;
+        this.filterService = filterService;
         this.productSortComparator = productSortComparator;
         this.cProductEntityMapper = cProductEntityMapper;
         this.productEntityMapper = productEntityMapper;
         this.productMapper = mapper;
+        this.filter = filter;
     }
 
     @PostMapping
@@ -86,14 +96,16 @@ public class ProductController {
     }
 
     @GetMapping
-    Mono<List<ProductDTO>> getProducts(@RequestParam(value = "filter_by", required = false) String filterBy,
+    Mono<List<ProductDTO>> getProducts(@RequestParam(value = "filtered_by", required = false) String filteredBy,
                                        @RequestParam(value = "sorted_by", required = false) String sortedBy) {
         Comparator<ProductDTO> comparator = productSortComparator.getComparator(sortedBy, allowedNamesForSort);
+        List<FilterParam> filterParams = filterService.getFilterParams(filteredBy, allowedNamesForFilter);
         return productService
                 .getAllProducts()
                 .flatMap(product -> {
                     List<ProductDTO> dtos = productMapper.entityToDTO(product);
                     dtos = dtos.stream()
+                            .filter(dto -> filter.filterDTO(filterParams, dto))
                             .sorted(comparator)
                             .collect(Collectors.toList());
                     return Mono.just(dtos);
