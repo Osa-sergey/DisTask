@@ -113,6 +113,7 @@ public class ArticleController {
                 .flatMap(article -> {
                     List<ArticleDTO> dtos = articleMapper.entityToDTO(article);
                     dtos = dtos.stream()
+                            .filter(dto -> filter.filterDTO(filterParams, dto))
                             .sorted(comparator)
                             .collect(Collectors.toList());
                     return Mono.just(dtos);

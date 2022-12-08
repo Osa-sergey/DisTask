@@ -80,15 +80,31 @@ public class RestResponseEntityExceptionHandler {
     @ResponseStatus(value = HttpStatus.CONFLICT)
     @ExceptionHandler(value = {UnavailableFilterFieldName.class})
     public String handleException(UnavailableFilterFieldName ex) {
-        return "Name `" + ex.getMessage() + "` unavailable for filter parameter in this entity.";
+        return "Name `" + ex.getMessage() + "` unavailable for filter field name in this entity.";
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {UnrecognizedFilterParamException.class})
     public String handleException(UnrecognizedFilterParamException ex) {
-        return "The notation for the filter type is not recognized. Accepted operations:" +
-                "\nfor String:\n`cont` -> `contains`, `eq` -> `equals`\nfor Long, Float:\n`eq` - =," +
-                " `neq` -> `!=`, `gr` -> `>`, `egr -> `>=`, `le` -> `<`, `ele` -> `<=`.\n Provided `" + ex.getMessage()
-                + "`.";
+        return "The notation for the filter operation is not recognized. Accepted operations:" +
+                "\nfor String:" +
+                "\n`cont` -> `contains`, `eq` -> `=`, `neq` -> `!=`" +
+                "\nfor Long, Float:" +
+                "\n`eq` -> `=`, `neq` -> `!=`, `gr` -> `>`, `egr -> `>=`, `le` -> `<`, `ele` -> `<=`" +
+                "\nfor Date:" +
+                "\n`eq` -> `=`, `neq` -> `!=`, `gr` -> `>`, `le` -> `<`" +
+                "\nProvided `" + ex.getMessage() + "`.";
+    }
+
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ExceptionHandler(value = {UnacceptableFilterOperationException.class})
+    public String handleException(UnacceptableFilterOperationException ex) {
+        return ex.getMessage();
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {ConvertFilterParamException.class})
+    public String handleException(ConvertFilterParamException ex) {
+        return "The value `" + ex.getMessage() + "` can`t be converted.";
     }
 }
