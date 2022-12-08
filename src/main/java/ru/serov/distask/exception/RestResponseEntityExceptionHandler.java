@@ -70,4 +70,25 @@ public class RestResponseEntityExceptionHandler {
     public String handleException(IncorrectSortParamsFormat ex) {
         return "Sorting parameters do not match the format: asc/desc(name1),asc/desc(name2),...";
     }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {IncorrectFilterParamsFormat.class})
+    public String handleException(IncorrectFilterParamsFormat ex) {
+        return "Filter parameters do not match the format: field1[operation1]=value1,field2[operation2]=value2...";
+    }
+
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ExceptionHandler(value = {UnavailableFilterFieldName.class})
+    public String handleException(UnavailableFilterFieldName ex) {
+        return "Name `" + ex.getMessage() + "` unavailable for filter parameter in this entity.";
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {UnrecognizedFilterParamException.class})
+    public String handleException(UnrecognizedFilterParamException ex) {
+        return "The notation for the filter type is not recognized. Accepted operations:" +
+                "\nfor String:\n`cont` -> `contains`, `eq` -> `equals`\nfor Long, Float:\n`eq` - =," +
+                " `neq` -> `!=`, `gr` -> `>`, `egr -> `>=`, `le` -> `<`, `ele` -> `<=`.\n Provided `" + ex.getMessage()
+                + "`.";
+    }
 }

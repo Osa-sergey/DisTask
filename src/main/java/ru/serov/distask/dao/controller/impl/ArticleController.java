@@ -3,6 +3,7 @@ package ru.serov.distask.dao.controller.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import ru.serov.distask.dao.controller.filter.IDTOFilter;
 import ru.serov.distask.dao.controller.mapper.article.IArticleDTOArticleMapper;
 import ru.serov.distask.dao.controller.mapper.articleentity.IArticleEntityDTOArticleEntityMapper;
 import ru.serov.distask.dao.controller.mapper.articleentity.ICArticleEntityDTOArticleEntityMapper;
@@ -12,6 +13,8 @@ import ru.serov.distask.dao.controller.model.articleentity.CArticleEntityDTO;
 import ru.serov.distask.dao.controller.sort.ISortComparator;
 import ru.serov.distask.service.IArticleEntityService;
 import ru.serov.distask.service.IArticleService;
+import ru.serov.distask.service.IRESTFilterService;
+import ru.serov.distask.service.model.FilterParam;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -24,24 +27,34 @@ public class ArticleController {
 
     private final IArticleEntityService articleEntityService;
     private final IArticleService articleService;
+    private final IRESTFilterService filterService;
     private final ISortComparator<ArticleDTO> articleSortComparator;
     private final IArticleEntityDTOArticleEntityMapper articleEntityMapper;
     private final ICArticleEntityDTOArticleEntityMapper cArticleEntityMapper;
     private final IArticleDTOArticleMapper articleMapper;
+    private final IDTOFilter<ArticleDTO> filter;
+    private final List<String> allowedNamesForSort = Arrays.asList("id", "product_id", "article_name", "article_content",
+            "create_date", "product_name", "product_description", "product_implement_cost");
+    private final List<String> allowedNamesForFilter = Arrays.asList("id", "product_id", "article_name", "article_content",
+            "create_date", "product_name", "product_description", "product_implement_cost");
 
     @Autowired
     public ArticleController(IArticleEntityService articleEntityService,
                              IArticleService articleService,
+                             IRESTFilterService filterService,
                              ISortComparator<ArticleDTO> restSortService,
                              IArticleEntityDTOArticleEntityMapper articleEntityMapper,
                              ICArticleEntityDTOArticleEntityMapper cArticleEntityMapper,
-                             IArticleDTOArticleMapper articleMapper) {
+                             IArticleDTOArticleMapper articleMapper,
+                             IDTOFilter<ArticleDTO> filter) {
         this.articleEntityService = articleEntityService;
         this.articleService = articleService;
+        this.filterService = filterService;
         this.articleSortComparator = restSortService;
         this.articleEntityMapper = articleEntityMapper;
         this.cArticleEntityMapper = cArticleEntityMapper;
         this.articleMapper = articleMapper;
+        this.filter = filter;
     }
 
     @PostMapping
@@ -91,15 +104,15 @@ public class ArticleController {
     }
 
     @GetMapping
-    Mono<List<ArticleDTO>> getArticles(@RequestParam(value = "filter_by", required = false) String filterBy,
+    Mono<List<ArticleDTO>> getArticles(@RequestParam(value = "filtered_by", required = false) String filteredBy,
                                        @RequestParam(value = "sorted_by", required = false) String sortedBy) {
         Comparator<ArticleDTO> comparator = articleSortComparator.getComparator(sortedBy, allowedNamesForSort);
+        List<FilterParam> filterParams = filterService.getFilterParams(filteredBy, allowedNamesForFilter);
         return articleService
                 .getAllArticles()
                 .flatMap(article -> {
                     List<ArticleDTO> dtos = articleMapper.entityToDTO(article);
                     dtos = dtos.stream()
-                            .filter(a -> a.getProduct_id() == 1)
                             .sorted(comparator)
                             .collect(Collectors.toList());
                     return Mono.just(dtos);
